@@ -1,100 +1,247 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>YuanRetro-中国铁路行程信息提示生成器(CRTIRGen)</title>
+		<meta name="description" content="中国铁路行程信息提示生成器（CRTIRGen）：填写行程与票务信息，实时生成行程信息提示单并另存为图片。纯前端运行，不收集任何个人信息。">
+		<meta name="theme-color" content="#0c3b7a">
+		<title>中国铁路行程信息提示生成器</title>
 		<link rel="stylesheet" href="./style.css">
 	</head>
 	<body class="body">
-		<nav class="navi">
-			<ul>
-				<li class="nav-item"><a href="http://www.yuanshen.dev/">主页</a></li>
-				<li class="nav-item"><a href="http://www.yuanshen.dev/music.html">音乐</a></li>
-				<li class="nav-item"><a href="http://www.yuanshen.dev/pinball.html">JS弹球</a></li>
-				<li class="nav-item"><a href="http://www.yuanshen.dev/morse.html">莫尔斯电码</a></li>
-				<li class="nav-item"><a href="http://www.yuanshen.dev/crtirgen.html">中国铁路行程信息提示生成器(CRTIRGen)</a></li>
-				<li class="nav-item"><a href="http://www.yuanshen.dev/about.html">关于</a></li>
-				<li class="nav-item"><a href="http://www.yuanshen.dev/en/crtirgen.html">English</a></li>
-			</ul>
-		</nav>
-		<br />
-		<h2>中国铁路行程信息提示生成器 V1.2-2024.07.23</h2>
-		<p>一、铁路磁票（报销凭证）票号（21字符）构成：车站TMIS（5位数，查询请前往<a href="https://rail.re/">https://rail.re/</a>）+出票机器类型（2位数，00-09为人工售票窗口，20-29为车票代售点，30-39为自动售票机）+出票机器编号（3位数）+结算日期（4位数，MMDD格式，一般为乘车日期下一天）+票纸编号（7字符，一般为1字母+6数字）</p>
-	    <p>如：（1）18089（青岛站）31（售票机）042（机器号）0517（结算日期,5月17日）H000565（票纸号）<br />（2）17984（胶州站）00（人工窗口）003（机器号）0229（结算日期，2月29日）P062258（票纸号）<br />（3）17999（蓝村站）30（售票机）031（机器号）1213（结算日期，12月13日）A016888（票纸号）</p>
-		<p>二、电子票号（25数字）构成：车站TMIS（5位数）+出票机器类型（2位数，同上）+出票机器编号（3位数）+结算日期（4位数，同上）+7位数（一般9开头，含义未知，如果您恰好知道，请不吝赐教哦~）+年份（4位数）</p>
-		<p>如：（1）22972（东莞港站）30（售票机）003（机器号）1114（结算日期，11月14日）9005786（未知）2020（年份）<br />（2）29957（达州站）00（人工窗口）005（机器号）0319（结算日期，3月19日）9110473（未知）2021（年份）<br />（3）39500（咸阳站）00（人工窗口）003（机器号）0214（结算日期，2月14日）9155434（未知）2022（年份）</p>
-		<p>三、行程信息提示“出单”号码（10位数）构成：车站TMIS（5位数）+出票机器类型（2位数，同上）+出票机器编号（3位数）</p>
-		<p>如：（1）17963（胶州北站）30（售票机）008（机器号）<br />（2）66827（徐州东站）30（售票机）088（机器号）<br />（3）18056（城阳站）00（人工窗口）003（机器号）</p>
-	<form id="customSelection">
-	<br />
-			<label for="date1">开车日期：</label>
-			<input type="date" id="date1" min="0000-01-01" max="9999-12-31" />
-			<label for="time1">开车时间：</label>
-			<input type="time" id="time1" /><br />
-			<label for="date2">打印日期：</label>
-			<input type="date" id="date2" min="0000-01-01" max="9999-12-31" />
-			<label for="time2">打印时间：</label>
-			<input type="time" id="time2" step="1" /><br /><!--添加step="1"使秒数选框出现-->
-			<label for="depStation">出发车站：</label>
-			<input type="text" id="depStation" size="10" />
-			<label for="depStation">站</label>
-			<label for="depPy">站名拼音（首字母大写）：</label>
-			<input type="text" id="depPy" size="14" /><br />
-			<label for="trainTypeDrop">车次号：</label>
-			<select id="trainTypeDrop">
-				<option value="normal">普客(无前缀)</option><!--"Normal"通过判断语句转为无前缀，其他的直接使用value中的值作为车次号前缀-->
-				<option value="K">快速(K)</option>
-				<option value="T">特快(T)</option>
-				<option value="Z">直特(Z)</option>
-				<option value="T">旅游(Y)</option>
-				<option value="L">临客(L)</option>
-				<option value="S">市域/市郊(S)</option>
-				<option value="C">城际(C)</option>
-				<option value="D">动车(D)</option>
-				<option value="G">高铁(G)</option>
-			</select>
-			<label for="trainTypeDrop">次</label>
-			<input type="text" id="trainNo" size="8" /><br />
-			<label for="arrStation">到达车站：</label>
-			<input type="text" id="arrStation" size="10" />
-			<label for="arrStation">站</label>
-			<label for="arrPy">站名拼音（首字母大写）：</label>
-			<input type="text" id="arrPy" size="14" /><br />
-			<label for="seatNumber">座号：</label>
-			<input type="text" id="seatNumber" size="10" />
-			<label for="seatType">坐席类别：</label>
-			<input type="text" id="seatType" size="10" /><br />
-			<label for="fare">票价（带小数点后一位）：</label>
-			<input type="text" id="fare" size="6" />
-			<label for="fare">元</label>
-			<label for="ticketCheck">检票口（没有可不填）：</label>
-			<input type="text" id="ticketCheck" size="12" /><br />
-			<label for="TMIS">车站TMIS号码（5位数，查询请前往<a href="https://rail.re/">https://rail.re/</a>）：</label><!--TMIS为每个铁路车站的唯一五位数编号-->
-			<input type="text" id="TMIS" size="8" /><br />
-			<label for="machineType">打印机器类型（2位数，00-09：车站售票窗口；20-29：车票代售点；30-39：自动售票机）：</label>
-			<input type="text" id="machineType" size="5" /><br />
-			<label for="machineNo">打印机器编号（3位数）：</label><!--凭条尾部的“出单”10位数号码即为TMIS（5位数）+机器类型（2位数）+机器编号（3位数）-->
-			<input type="text" id="machineNo" size="5" />
-			<label for="orderNo">订单号（10个字符）：</label><!--一般为E开头-->
-			<input type="text" id="orderNo" size="10" /><br />
-			<label for="ticketNo">电子票号（25位数）：</label><!--前14位数为TMIS（5位数）+机器类型（2位数）+机器编号（3位数）+结算日期（MMDD，4位数）；最后4位数为年份；两部分中间的7位数未知-->
-			<input type="text" id="ticketNo" size="30" /><br />
-			<label for="name">乘车人姓名：</label>
-			<input type="text" id="name" size="8" />
-			<label for="idTypeEng">身份证件类型代码（2字母）：</label>
-			<input type="text" id="idTypeEng" size="6" /><br />
-			<label for="idTypeChn">身份证件类型（中文）：</label>
-			<input type="text" id="idTypeChn" size="12" />
-			<label for="idNo">身份证件号码（必要位置使用‘*’代替）：</label>
-			<input type="text" id="idNo" size="18" />
-			<input type="button" value="确认" id="submit1" />
-		</form>
-		<canvas id="canvas" width="800" height="1400"></canvas>
+		<header class="topbar">
+			<div class="topbar-inner">
+				<a class="brand" href="http://www.yuanshen.dev/"><span class="brand-mark" aria-hidden="true"></span>YuanRetro</a>
+				<nav class="navi" aria-label="站点导航">
+					<ul>
+						<li class="nav-item"><a href="http://www.yuanshen.dev/">主页</a></li>
+						<li class="nav-item"><a href="http://www.yuanshen.dev/music.html">音乐</a></li>
+						<li class="nav-item"><a href="http://www.yuanshen.dev/pinball.html">JS弹球</a></li>
+						<li class="nav-item"><a href="http://www.yuanshen.dev/morse.html">莫尔斯电码</a></li>
+						<li class="nav-item"><a class="is-current" href="http://www.yuanshen.dev/crtirgen.html" aria-current="page">中国铁路行程信息提示生成器(CRTIRGen)</a></li>
+						<li class="nav-item"><a href="http://www.yuanshen.dev/about.html">关于</a></li>
+						<li class="nav-item"><a href="http://www.yuanshen.dev/en/crtirgen.html">English</a></li>
+					</ul>
+				</nav>
+			</div>
+		</header>
+
+		<main>
+			<section class="hero">
+				<div class="hero-inner">
+					<h1>中国铁路行程信息提示生成器</h1>
+				</div>
+			</section>
+
+			<section class="layout">
+				<section class="panel form-panel" aria-labelledby="form-title">
+					<div class="panel-head">
+						<h2 id="form-title">信息填写</h2>
+						<p class="panel-sub">标 <span class="req">*</span> 的为常用项，其余留空也能生成；修改任意输入项都会即时刷新预览。</p>
+					</div>
+
+					<form id="customSelection" autocomplete="off" onsubmit="return false">
+						<section class="group">
+							<h3 class="group-title">行程</h3>
+							<div class="fields">
+								<div class="field">
+									<label for="date1">开车日期 <span class="req">*</span></label>
+									<input type="date" id="date1" min="0000-01-01" max="9999-12-31" />
+								</div>
+								<div class="field">
+									<label for="time1">开车时间 <span class="req">*</span></label>
+									<input type="time" id="time1" />
+								</div>
+								<div class="field">
+									<label for="depStation">出发车站 <span class="req">*</span></label>
+									<input type="text" id="depStation" size="10" placeholder="例：青岛" />
+									<span class="hint">生成后自动补“站”字</span>
+								</div>
+								<div class="field">
+									<label for="depPy">出发站拼音</label>
+									<input type="text" id="depPy" size="14" placeholder="例：Qingdao" />
+									<span class="hint">首字母大写，显示在站名下方</span>
+								</div>
+								<div class="field">
+									<label for="arrStation">到达车站 <span class="req">*</span></label>
+									<input type="text" id="arrStation" size="10" placeholder="例：北京南" />
+									<span class="hint">生成后自动补“站”字</span>
+								</div>
+								<div class="field">
+									<label for="arrPy">到达站拼音</label>
+									<input type="text" id="arrPy" size="14" placeholder="例：Beijingnan" />
+								</div>
+								<div class="field span-2">
+									<label for="trainNo">车次 <span class="req">*</span></label>
+									<div class="compound">
+										<select id="trainTypeDrop" aria-label="车次类型前缀">
+											<option value="normal">普客（无前缀）</option>
+											<option value="K">快速 K</option>
+											<option value="T">特快 T</option>
+											<option value="Z">直特 Z</option>
+											<option value="Y">旅游 Y</option>
+											<option value="L">临客 L</option>
+											<option value="S">市域/市郊 S</option>
+											<option value="C">城际 C</option>
+											<option value="D">动车 D</option>
+											<option value="G">高铁 G</option>
+										</select>
+										<input type="text" id="trainNo" size="8" placeholder="例：7001" />
+									</div>
+									<span class="hint">类型前缀 + 车次数字，选择“普客”时不加字母</span>
+								</div>
+							</div>
+						</section>
+
+						<section class="group">
+							<h3 class="group-title">席别与票价</h3>
+							<div class="fields">
+								<div class="field">
+									<label for="seatNumber">座号</label>
+									<input type="text" id="seatNumber" size="10" placeholder="例：05车12F号" />
+								</div>
+								<div class="field">
+									<label for="seatType">坐席类别</label>
+									<input type="text" id="seatType" size="10" placeholder="例：二等座" />
+								</div>
+								<div class="field">
+									<label for="fare">票价（元）</label>
+									<input type="text" id="fare" size="6" placeholder="例：54.5" inputmode="decimal" />
+									<span class="hint">保留小数点后一位</span>
+								</div>
+								<div class="field">
+									<label for="ticketCheck">检票口</label>
+									<input type="text" id="ticketCheck" size="12" placeholder="例：3A，没有可不填" />
+								</div>
+							</div>
+						</section>
+
+						<section class="group">
+							<h3 class="group-title">票号与出票</h3>
+							<div class="fields">
+								<div class="field">
+									<label for="date2">打印日期 <span class="req">*</span></label>
+									<input type="date" id="date2" min="0000-01-01" max="9999-12-31" />
+								</div>
+								<div class="field">
+									<label for="time2">打印时间 <span class="req">*</span></label>
+									<input type="time" id="time2" step="1" />
+									<span class="hint">含秒，显示在提示单右下角</span>
+								</div>
+								<div class="field">
+									<label for="TMIS">车站 TMIS 号码</label>
+									<input type="text" id="TMIS" size="8" maxlength="5" inputmode="numeric" placeholder="5 位数，例：18089" />
+									<span class="hint">查询车站编号：<a href="https://rail.re/" target="_blank" rel="noopener">rail.re</a></span>
+								</div>
+								<div class="field">
+									<label for="machineType">打印机器类型</label>
+									<input type="text" id="machineType" size="5" maxlength="2" inputmode="numeric" placeholder="2 位数，例：30" />
+									<span class="hint">00-09 窗口 · 20-29 代售点 · 30-39 自动售票机</span>
+								</div>
+								<div class="field">
+									<label for="machineNo">打印机器编号</label>
+									<input type="text" id="machineNo" size="5" maxlength="3" inputmode="numeric" placeholder="3 位数，例：042" />
+								</div>
+								<div class="field">
+									<label for="orderNo">订单号</label>
+									<input type="text" id="orderNo" size="10" maxlength="10" placeholder="例：E123456789" />
+									<span class="hint">一般为 E 开头，共 10 个字符</span>
+								</div>
+								<div class="field span-2">
+									<label for="ticketNo">电子票号</label>
+									<input type="text" id="ticketNo" size="30" maxlength="25" inputmode="numeric" placeholder="25 位数字" />
+									<span class="hint">前 14 位 = TMIS(5) + 机器类型(2) + 机器编号(3) + 结算日期 MMDD(4)，末尾 4 位为年份，中间 7 位含义未知</span>
+								</div>
+							</div>
+						</section>
+
+						<section class="group">
+							<h3 class="group-title">旅客信息</h3>
+							<div class="fields">
+								<div class="field">
+									<label for="name">乘车人姓名</label>
+									<input type="text" id="name" size="8" placeholder="例：张三" />
+								</div>
+								<div class="field">
+									<label for="idTypeEng">证件类型代码</label>
+									<input type="text" id="idTypeEng" size="6" maxlength="2" placeholder="2 位字母" />
+								</div>
+								<div class="field">
+									<label for="idTypeChn">证件类型</label>
+									<input type="text" id="idTypeChn" size="12" placeholder="例：居民身份证" />
+								</div>
+								<div class="field">
+									<label for="idNo">证件号码</label>
+									<input type="text" id="idNo" size="18" placeholder="必要位置用 * 代替" />
+								</div>
+							</div>
+						</section>
+
+						<div class="actions">
+							<button type="button" id="submit1" class="btn btn-primary btn-lg">生成提示单</button>
+							<span class="actions-hint">快捷键：Enter</span>
+						</div>
+					</form>
+				</section>
+
+				<aside class="panel preview-panel" aria-labelledby="preview-title">
+					<div class="panel-head">
+						<h2 id="preview-title">实时预览</h2>
+						<p class="panel-sub">800 × 1400 像素，与纸质提示单版式一致</p>
+					</div>
+					<div class="ticket-stage">
+						<canvas id="canvas" width="800" height="1400" role="img" aria-label="行程信息提示单预览"></canvas>
+					</div>
+					<div class="actions">
+						<button type="button" id="saveBtn" class="btn btn-primary">保存为图片</button>
+						<a class="btn btn-ghost" href="#customSelection">回到填写</a>
+					</div>
+					<p class="tip">若浏览器拦截下载（本地双击打开时较常见），可右键点击预览图选择“图片另存为”。本站不会收集任何个人信息。</p>
+				</aside>
+			</section>
+
+			<section class="guide-wrap">
+				<details class="guide">
+					<summary>票号规则说明 · 21 / 25 / 10 位号码都是怎么拼出来的</summary>
+					<div class="guide-body">
+						<h3>一、铁路磁票（报销凭证）票号（21 字符）</h3>
+						<p>车站 TMIS（5 位数，查询请前往 <a href="https://rail.re/" target="_blank" rel="noopener">https://rail.re/</a>）+ 出票机器类型（2 位数，00-09 为人工售票窗口，20-29 为车票代售点，30-39 为自动售票机）+ 出票机器编号（3 位数）+ 结算日期（4 位数，MMDD 格式，一般为乘车日期下一天）+ 票纸编号（7 字符，一般为 1 字母 + 6 数字）。</p>
+						<ul>
+							<li>18089（青岛站）31（售票机）042（机器号）0517（结算日期，5月17日）H000565（票纸号）</li>
+							<li>17984（胶州站）00（人工窗口）003（机器号）0229（结算日期，2月29日）P062258（票纸号）</li>
+							<li>17999（蓝村站）30（售票机）031（机器号）1213（结算日期，12月13日）A016888（票纸号）</li>
+						</ul>
+
+						<h3>二、电子票号（25 数字）</h3>
+						<p>车站 TMIS（5 位数）+ 出票机器类型（2 位数，同上）+ 出票机器编号（3 位数）+ 结算日期（4 位数，同上）+ 7 位数（一般 9 开头，含义未知，如果您恰好知道，请不吝赐教哦~）+ 年份（4 位数）。</p>
+						<ul>
+							<li>22972（东莞港站）30（售票机）003（机器号）1114（结算日期，11月14日）9005786（未知）2020（年份）</li>
+							<li>29957（达州站）00（人工窗口）005（机器号）0319（结算日期，3月19日）9110473（未知）2021（年份）</li>
+							<li>39500（咸阳站）00（人工窗口）003（机器号）0214（结算日期，2月14日）9155434（未知）2022（年份）</li>
+						</ul>
+
+						<h3>三、行程信息提示“出单”号码（10 位数）</h3>
+						<p>车站 TMIS（5 位数）+ 出票机器类型（2 位数，同上）+ 出票机器编号（3 位数）。</p>
+						<ul>
+							<li>17963（胶州北站）30（售票机）008（机器号）</li>
+							<li>66827（徐州东站）30（售票机）088（机器号）</li>
+							<li>18056（城阳站）00（人工窗口）003（机器号）</li>
+						</ul>
+					</div>
+				</details>
+			</section>
+		</main>
+
+		<a class="fab" href="#preview-title">查看预览 ↓</a>
+
+		<footer class="footer">
+			<div class="footer-inner">
+				<p>本站不会收集任何个人信息，请放心使用；使用时请大家遵守国家法律法规，切忌用于违法违规用途噢~</p>
+				<p>站长建议在桌面端使用基于 Chromium 内核的浏览器或火狐浏览器访问诶~</p>
+				<p>意见与反馈：<a href="mailto:lijiaxuan1811@163.com">lijiaxuan1811@163.com</a> · <a href="https://github.com/lijiaxuan1811/China-Railway-Trip-Information-Reminder-Generator" target="_blank" rel="noopener">GitHub Issues</a></p>
+			</div>
+		</footer>
+
 		<script type="text/javascript" src="./crtirgen.js"></script>
-		<p>注：如需保存生成的图片，右键单击上方区域并选择“图片另存为”选项就可以哦~</p>
-		<p>站长建议在桌面端使用基于Chromium内核的浏览器或火狐浏览器访问诶~</p>
-		<p>本站不会收集任何个人信息，请放心使用；使用时请大家遵守国家法律法规，切忌用于违法违规用途噢~</p>
-		<p>如有任何意见或反馈，请大胆联系站长哦~<a href="mailto:lijiaxuan1811@163.com">lijiaxuan1811@163.com</a>或者在以下页面提交Issue：<a href="https://github.com/lijiaxuan1811/China-Railway-Trip-Information-Reminder-Generator">https://github.com/lijiaxuan1811/China-Railway-Trip-Information-Reminder-Generator</a> 非常感谢诸位宝贵的反馈噢！</p>
 	</body>
 </html>
