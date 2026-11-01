@@ -4,6 +4,8 @@ var img1 = new Image();
 var img2 = new Image(); //声明中国铁路logo和二维码的图片对象
 img1.src = "./img1.gif";
 img2.src = "./img2.gif";
+img1.addEventListener("load", renderSafe); //图片加载完成后重新绘制一次
+img2.addEventListener("load", renderSafe);
 var date1, time1, date2, time2, trainTypeDrop, trainNo; //声明表单中若干项目的对象变量
 var button = document.getElementById("submit1"); //声明提交按钮对象
 var depTime = "",
@@ -77,6 +79,22 @@ function readForm() {
   idNo = document.getElementById("idNo").value; //获取输入框的输入值（直接使用document.getElementById方法，减少需要声明的对象数量）
 }
 
+function drawImg(img, x, y, w, h) {
+  //素材图片可能尚未加载完成（或缺少文件），此时跳过绘制，而不是让整张画布绘制失败
+  if (img && img.complete && img.naturalWidth > 0) {
+    ctx.drawImage(img, x, y, w, h);
+  }
+}
+
+function renderSafe() {
+  //渲染出错时保留上一次的画面，避免整个页面因缺少素材而不可用
+  try {
+    init();
+  } catch (e) {
+    if (window.console) console.warn("[CRTIRGen] 渲染失败：", e);
+  }
+}
+
 function init() {
   //触发按钮或者键盘事件之后，首先调用本函数，读取输入值并填充固定内容
   readForm(); //调用函数读取表单
@@ -88,8 +106,8 @@ function init() {
   ctx.fillStyle = "#000000";
   pointer = 0;
   pointer1 = 0; //清空文字x坐标指针
-  ctx.drawImage(img1, 50, 90, 45, 45); //填充中国铁路logo
-  ctx.drawImage(img2, 470, 850, 300, 300); //填充二维码
+  drawImg(img1, 50, 90, 45, 45); //填充中国铁路logo
+  drawImg(img2, 470, 850, 300, 300); //填充二维码
   ctx.font = "35px 黑体";
   ctx.fillText("中国铁路", 100, 130);
   ctx.font = "Bold 30px Times New Roman";
@@ -115,14 +133,14 @@ function init() {
   ctx.fillText("限乘当日当次车", 40, 570);
   ctx.fillText("元", 750, 775);
   ctx.fillText("温馨提示", 180, 860);
-  ctx.fillText("1.此凭条不可作为乘车凭证使用", 40, 900);
-  ctx.fillText("，请您持购票证件进站检票乘车", 40, 940);
-  ctx.fillText("。", 40, 980);
-  ctx.fillText("2.为方便您在网上办理行程变更", 40, 1020);
-  ctx.fillText("手续，建议在行程结束后按需领", 40, 1060);
-  ctx.fillText("取报销凭证。", 40, 1100);
-  ctx.fillText("3.欢迎扫码查阅乘车须知、下载", 40, 1140);
-  ctx.fillText("铁路12306APP。", 40, 1180);
+  ctx.font = "26px 宋体"; //提示正文缩小一号，避免右侧二维码与文字互相压盖
+  ctx.fillText("1.此凭条不可作为乘车凭证使用，", 40, 900);
+  ctx.fillText("请您持购票证件进站检票乘车。", 40, 940);
+  ctx.fillText("2.为方便您在网上办理行程变更", 40, 980);
+  ctx.fillText("手续，建议在行程结束后按需", 40, 1020);
+  ctx.fillText("领取报销凭证。", 40, 1060);
+  ctx.fillText("3.欢迎扫码查阅乘车须知、下载", 40, 1100);
+  ctx.fillText("铁路12306APP。", 40, 1140);
   ctx.font = "35px 宋体";
   ctx.fillText("请按行程信息提示乘车，祝您旅途愉快！", 100, 1250);
   ctx.font = "30px 宋体";
@@ -227,14 +245,48 @@ function cusGen() {
   ctx.fillText("订 单 号：" + orderNo, 40, 775); //填充订单号
   ctx.fillText(code1 + " " + prtDate + " " + prtTime, 235, 1300); //填充code1(车站TMIS+出票机器类型+机器号)和打印日期时间
 }
-button.addEventListener("click", function () {
-  //单击按钮执行初始化函数
-  init();
-});
+// ---- 交互：实时预览 / 按钮 / 保存图片 ----
+var renderTimer = null;
+
+function scheduleRender() {
+  clearTimeout(renderTimer);
+  renderTimer = setTimeout(renderSafe, 160); //轻微防抖，避免连续输入时反复重绘
+}
+
+button.addEventListener("click", renderSafe); //单击按钮执行初始化函数
+
+var formEl = document.getElementById("customSelection");
+if (formEl) {
+  //输入框、日期时间控件、下拉框有任何变化都刷新预览
+  formEl.addEventListener("input", scheduleRender);
+  formEl.addEventListener("change", scheduleRender);
+}
+
+var saveBtn = document.getElementById("saveBtn");
+if (saveBtn) {
+  saveBtn.addEventListener("click", function () {
+    //导出画布为PNG；本地文件打开时浏览器可能因安全策略拒绝，此时提示右键另存
+    try {
+      var url = canv.toDataURL("image/png");
+      var a = document.createElement("a");
+      a.href = url;
+      a.download = "行程信息提示.png";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (e) {
+      alert("浏览器出于安全限制无法直接下载图片（以本地文件方式打开时较常见）。\n请右键点击预览图，选择“图片另存为”即可保存。");
+    }
+  });
+}
+
 document.onkeydown = function (event) {
   //按下回车键与单击按钮效果相同
   if (event.keyCode == 13) {
     //键码13为回车键
-    init();
+    renderSafe();
   }
 };
+
+//进入页面先按空表单渲染一次，让版式和固定文字立即可见
+window.addEventListener("load", renderSafe);
