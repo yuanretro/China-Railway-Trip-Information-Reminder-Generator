@@ -107,7 +107,7 @@ function init() {
   pointer = 0;
   pointer1 = 0; //清空文字x坐标指针
   drawImg(img1, 50, 90, 45, 45); //填充中国铁路logo
-  drawImg(img2, 470, 850, 300, 300); //填充二维码
+  drawImg(img2, 400, 825, 345, 345); //填充二维码
   ctx.font = "35px 黑体";
   ctx.fillText("中国铁路", 100, 130);
   ctx.font = "Bold 30px Times New Roman";
@@ -133,14 +133,13 @@ function init() {
   ctx.fillText("限乘当日当次车", 40, 570);
   ctx.fillText("元", 750, 775);
   ctx.fillText("温馨提示", 180, 860);
-  ctx.font = "26px 宋体"; //提示正文缩小一号，避免右侧二维码与文字互相压盖
-  ctx.fillText("1.此凭条不可作为乘车凭证使用，", 40, 900);
-  ctx.fillText("请您持购票证件进站检票乘车。", 40, 940);
-  ctx.fillText("2.为方便您在网上办理行程变更", 40, 980);
-  ctx.fillText("手续，建议在行程结束后按需", 40, 1020);
-  ctx.fillText("领取报销凭证。", 40, 1060);
-  ctx.fillText("3.欢迎扫码查阅乘车须知、下载", 40, 1100);
-  ctx.fillText("铁路12306APP。", 40, 1140);
+  ctx.fillText("1.此凭条不可作为乘车凭", 40, 904);
+  ctx.fillText("证使用，请您持购票证件", 40, 948);
+  ctx.fillText("进站检票乘车。", 40, 992);
+  ctx.fillText("2.请您在行程结束后按需", 40, 1036);
+  ctx.fillText("开具电子发票。", 40, 1080);
+  ctx.fillText("3.欢迎扫码查阅乘车须知", 40, 1124);
+  ctx.fillText("、下载铁路12306APP。", 40, 1168);
   ctx.font = "35px 宋体";
   ctx.fillText("请按行程信息提示乘车，祝您旅途愉快！", 100, 1250);
   ctx.font = "30px 宋体";

@@ -2,10 +2,10 @@
 中国铁路行程信息提示生成器
 <br />
 最新版本：1.2 2024.7.23
-如果有任何问题或者建议，请及时与本人联系（lijiaxuan1811@163.com）或提交Issue，不胜感激！
+如果有任何问题或者建议，请及时与本人联系（[admin@yuanshen.dev](mailto:admin@yuanshen.dev)）或提交Issue，不胜感激！
 <br />
 使用方法：
-1.访问http://www.yuanshen.dev/crtirgen.html/
+1.访问[http://www.yuanshen.dev/crtirgen.html/](http://www.yuanshen.dev/crtirgen.html/)
 <br />
 2.下载Release中的所有文件并放置于同一目录，使用浏览器打开其中的crtirgen.html
 <br />
